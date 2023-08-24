@@ -1,0 +1,116 @@
+setup git 
+
+	-- config user name && email
+
+		* git config --global user.name "name user"	
+		* git config --global user.email 'email'	
+
+	-- config develomnet IDE 'vscode'
+	
+		* git config --global core.editor "code --wait"	
+
+	-- review settings
+		
+		* git config --global -e
+
+	-- check line break 
+	
+		* git config -- global core.autocrfl true --> 'For windows'
+											 input --> 'Mac or Linux'		
+
+	-- review most setting 
+	
+	   * git config -- global -h
+
+Commands
+
+	-- folder list 
+
+		* ls 
+
+	--	current directory
+
+		* pwd
+
+	-- moved between directory
+	
+		* cd 'name directory/'	or  route directory 
+
+	-- out directory
+	
+		* cd ..	
+
+	-- to make directory
+		
+		* mkdir 'name directory' 	
+
+Repository
+
+	-- create repository 
+
+		* git init 	
+
+	-- review current status 
+
+		* git status 
+		* git status -s
+
+	--  add files the  staged	
+
+		* git add 'name file'
+
+	-- commit 
+	
+		* git commit -m "message"
+
+	-- delete files 
+		
+		* git rm 'name file'
+
+	-- restore files
+		
+		1) git restore --staged 'name file'	
+		2) git restore 'name file'	
+
+	-- move files o rename files -> add direct to staged 
+	
+		* git mv 'name files' route --> destiny file
+		* git mv 'name files' 'new file name'	 
+
+	-- ignore files
+		
+		* create file .ignore --> add 'name files' or route directory	
+
+	-- review changes 
+
+		* (before staged) git diff --> leave console git diff clic letter 'q'
+		* (currently staged) git diff --staged
+
+	-- review log commits 
+		
+		git log --oneline
+
+Branch 			
+	
+	-- rename branch 
+
+		* git branch -m 'old name' 'new name'
+
+	-- create branch
+	
+		*  git checkout -b 'name branch'	
+
+	-- delete local branch 
+
+		* git branch -d 'name branch'
+
+	-- delete remote branch
+	
+		* git push origin --delete 'name branch'	
+
+	-- move into branch
+
+		* git checkout 'name branch'
+
+
+
