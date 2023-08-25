@@ -125,5 +125,9 @@ Branch
 	-- copy files or folders between branchs
 		
 		* git checkout 'name branch' -- 'file name'
+
+	-- upload branch  to github
+
+		* git push -u origin 'branch name'
 	
 
