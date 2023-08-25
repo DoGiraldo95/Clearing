@@ -26,7 +26,7 @@ WHERE
   AND TRUNC(A.CLEARING_DATE) = TRUNC(SYSDATE)
   AND A.TP_ID <> 999;
 
--- 295428
+-- 290753
 
 /
 
@@ -41,7 +41,7 @@ WHERE
  --- AND TRUNC(A.CLEARING_DATE) = TRUNC(SYSDATE)
   AND A.TP_ID = 999;
 
---  673
+--  583
 /
 
 SELECT COUNT(*)
@@ -51,7 +51,7 @@ SELECT COUNT(*)
      AND a.processed IN ('S', 'C')
 --      AND a.response_date IS NULL;
 
---  673
+--  583
 
 /
 
