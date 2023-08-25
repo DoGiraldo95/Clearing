@@ -71,6 +71,7 @@ Repository
 		
 		1) git restore --staged 'name file'	
 		2) git restore 'name file'	
+		3) git reset –hard HEAT <clave> --> unique code of log
 
 	-- move files o rename files -> add direct to staged 
 	
@@ -111,6 +112,18 @@ Branch
 	-- move into branch
 
 		* git checkout 'name branch'
+		* git switch 'branch name'
 
+	-- review files in console
 
+		* cat 'file name'	
+
+	-- 	update branch
+
+		* git merge 'branch name'  
+
+	-- copy files or folders between branchs
+		
+		* git checkout 'name branch' -- 'file name'
+	
 
