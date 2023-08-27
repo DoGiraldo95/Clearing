@@ -90,6 +90,7 @@ Repository
 	-- review log commits 
 		
 		git log --oneline
+		git log -- graph --oneline
 
 Branch 			
 	
@@ -118,7 +119,7 @@ Branch
 
 		* cat 'file name'	
 
-	-- 	update branch
+	-- 	update branch with other branch 
 
 		* git merge 'branch name'  
 
@@ -138,3 +139,11 @@ Branch
 	-- upload branch  to github
 
 		* git push -u origin 'branch name'
+
+	-- upload repository to git hub
+
+		* git remote add origin 'URL GIT '
+	
+	-- reataure from last point 
+
+		* git checkout 'branch name '
