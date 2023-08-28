@@ -44,6 +44,11 @@ Commands
 		
 		* mkdir 'name directory' 	
 
+	-- to create files empty 
+
+		* touch 'name file'
+
+
 Repository
 
 	-- create repository 
