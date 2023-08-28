@@ -27,8 +27,8 @@ WHERE
  order by T.PTD_REGDATE DESC
  ;
 
-
- --------------------------------------------
+-----------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------------
  SELECT
   A.CU_DATETIME   AS FECHA_TRX,
   A.CLEARING_DATE AS FECHA_LIQUIDACION,
@@ -43,12 +43,39 @@ WHERE
  INNER JOIN MERCURY.TBL_VALIDADORES_MRC V
  ON A.LD_ID=V.LD_ID
  WHERE 1=1 
- AND A.CLEARING_DATE >= TO_DATE('28-08-2023','DD/MM/YYYY HH24:MI:SS')      --FECHA DE LIQUIDACION
+ AND A.CLEARING_DATE >= TO_DATE('27-08-2023','DD/MM/YYYY HH24:MI:SS')      --FECHA DE LIQUIDACION
  AND A.CLEARING_DATE <= TO_DATE('28-08-2023','DD/MM/YYYY HH24:MI:SS')      --FECHA DELIQUIDACION  
  --AND A.CU_DATETIME = TO_DATE('','DD/MM/YYYY HH24:MI:SS')                 ------FECHA DE USO
- AND V.VEH_ID = 5103                                                       ------VALIDADOR 
+ --AND V.VEH_ID = 5103                                                       ------VALIDADOR 
  order by A.CU_DATETIME DESC;
- -------------------------------------------------------
+ ---------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------------
+-------------------------------------------------------
+--------------------------------------------------------
+--FECHA INCORRECTA--
+---------------------------------------------------------
+--------------------------------------------------------- 
+ SELECT 
+        CU.CU_DATETIME       AS FECHA_DE_USO,
+        CU.CU_DAT_INC_PUENTE AS FECHA_PUENTE,
+        VA.VEH_ID            AS ID_VALIDADOR,
+        VA.LD_DESC           AS NOM_VALIDADOR,
+        APP.APP_DESCLONG     AS PRODUCTO
+ FROM       MERCURY.CARDUSAGE CU
+ INNER JOIN MERCURY.TBL_VALIDADORES_MRC VA
+ ON         VA.LD_ID=CU.LD_ID
+ INNER JOIN MERCURY.APPLICATIONS APP 
+ ON         APP.APP_ID=CU.APP_ID
+ WHERE 1=1 
+ AND CU.CU_DATETIME >= TO_DATE('28-08-2023 00:01','DD/MM/YYYY HH24:MI:SS')     
+ AND CU.CU_DATETIME <= TO_DATE('28-08-2023 23:59','DD/MM/YYYY HH24:MI:SS') 
+ AND VA.VEH_ID = 5103  
+ --AND CU.CU_DAT_INC_PUENTE = TO_DATE('06-06-6666','DD/MM/YYYY')
+ORDER BY CU.CU_DATETIME DESC;
+
+
+
+
 
 
 
