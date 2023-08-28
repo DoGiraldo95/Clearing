@@ -97,6 +97,10 @@ Repository
 		git log --oneline
 		git log -- graph --oneline
 
+	--	review complete log
+
+		git ref log
+
 Branch 			
 	
 	-- rename branch 
@@ -148,7 +152,17 @@ Branch
 	-- upload repository to git hub
 
 		* git remote add origin 'URL GIT '
-	
-	-- reataure from last point 
 
-		* git checkout 'branch name '
+	 -- reataure from last point 
+
+		* git checkout 'branch code'	
+
+VERSION CONTROL 
+
+	-- restaurate commit  
+
+		* git checkout 'commit code'
+
+	-- tag commit 
+
+		* git tag 'tag name'
