@@ -46,12 +46,12 @@ WHERE
 
 SELECT COUNT(*)
     FROM MERCURY.TBL_TRX_UTRYTOPCS a
-   WHERE trunc(a.fecha_ws) >= trunc(sysdate)
+   WHERE trunc(a.fecha_ws) >= trunc(sysdate-2)
      AND a.status = 'A'
      AND a.processed IN ('S', 'C')
 --      AND a.response_date IS NULL;
 
---  583
+--  1379
 
 /
 
