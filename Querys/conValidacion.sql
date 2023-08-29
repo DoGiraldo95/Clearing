@@ -33,20 +33,21 @@ WHERE
 -- Contador USO VISA
 
 SELECT
-  COUNT(*)
+  *
 FROM
   MERCURY.TBL_LIQUIDACIONRYT_USOS A
 WHERE
-  TRUNC(A.CLEARING_REG) = TRUNC(SYSDATE)
+  TRUNC(A.CLEARING_DATE) = TRUNC(SYSDATE)
  --- AND TRUNC(A.CLEARING_DATE) = TRUNC(SYSDATE)
   AND A.TP_ID = 999;
 
 --  583
 /
 
-SELECT COUNT(*)
+SELECT COUNT(*) 
     FROM MERCURY.TBL_TRX_UTRYTOPCS a
-   WHERE trunc(a.fecha_ws) >= trunc(sysdate-2)
+   WHERE trunc(a.fecha_ws) >= trunc(sysdate)
+     AND trunc(a.ENTRY_DATE) = to_date(sysdate, 'dd-mm-yyyy')
      AND a.status = 'A'
      AND a.processed IN ('S', 'C')
 --      AND a.response_date IS NULL;
