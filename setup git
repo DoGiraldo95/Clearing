@@ -166,3 +166,33 @@ VERSION CONTROL
 	-- tag commit 
 
 		* git tag 'tag name'
+
+	-- save temporary 	
+
+		git stash
+
+	--	list stash
+
+		git stash list
+
+	-- restore changes temporary	
+
+		git stash pop
+
+	-- delete stash 
+
+		git stash drop	
+
+SETUP GITHUB
+
+		Connection type SSH 
+	
+		-- https://docs.github.com/es/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+
+		Upload local commits to GITHUB
+
+		-- git push 
+
+		download changes remotes
+
+		-- git pull
