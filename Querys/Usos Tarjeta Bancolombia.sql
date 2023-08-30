@@ -1,0 +1,40 @@
+SELECT
+  CA.CRD_INTSNR                                       TARJETA,
+  MERCURY.FORMATCARD(CA.ISS_ID, CA.CD_ID, CA.CRD_SNR) ID,
+  TO_CHAR(US.CU_DATETIME, 'YYYY-MM-DD hh24:mi:ss')    FECHA_USO,
+  US.CU_FAREVALUE                                     MONTO_USO,
+ -- UD.USRDOC_NUMBER                                    ID_USUARIO,
+ --ld.ld_id ID_ESTACION,
+  LD.LD_DESC                                          ESTACION
+ --us.clearing_date FECHA_DE_LIQUIDACION,
+ --ca.crd_status
+FROM
+  MERCURY.CARDS                   CA,
+  MERCURY.CARDSXUSERS             CU,
+  MERCURY.USERDOCUMENTS           UD,
+  MERCURY.TBL_LIQUIDACIONRYT_USOS US,
+  MERCURY.LINEDETAILS             LD,
+  MERCURY.TBL_LIQUIDACIONRYT_DATE LQ_D
+WHERE
+  1 = 1
+  AND CA.CRD_SNR = CU.CRD_SNR
+  AND CA.ISS_ID = CA.ISS_ID
+  AND CA.CD_ID = US.CD_ID
+  AND US.CRD_SNR = CA.CRD_SNR
+  AND US.LD_ID = LD.LD_ID
+  AND CU.USR_ID = UD.USR_ID
+  AND CU.USR_ID = UD.USR_ID
+  AND US.CLEARING_DATE = LQ_D.DATE_LIQ
+  AND UD.DT_ID = 1
+  AND US.APP_ID = 902
+  AND US.CU_ITG_CTR IS NULL
+  AND US.VEH_ID NOT IN (85003)
+ --    AND ca.crd_snr = 809543
+ --    AND us.clearing_date is not null
+  AND UD.USRDOC_NUMBER LIKE '%66863782%'
+  AND CA.CD_ID = 20
+  AND CA.CRD_INTSNR IN (1765402047, 69160399)
+  AND TRUNC(US.CU_DATETIME) >= TO_DATE('&Dia', 'dd-mm-yyyy')
+  AND TRUNC(US.CU_DATETIME) <= TO_DATE('&Dia2', 'dd-mm-yyyy')
+ORDER BY
+  2;
