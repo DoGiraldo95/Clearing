@@ -33,7 +33,7 @@ WHERE
 -- Contador USO VISA
 
 SELECT
-  *
+  COUNT(*)
 FROM
   MERCURY.TBL_LIQUIDACIONRYT_USOS A
 WHERE
@@ -44,13 +44,19 @@ WHERE
 --  583
 /
 
-SELECT COUNT(*) 
-    FROM MERCURY.TBL_TRX_UTRYTOPCS a
-   WHERE trunc(a.fecha_ws) >= trunc(sysdate)
-     AND trunc(a.ENTRY_DATE) = to_date(sysdate, 'dd-mm-yyyy')
-     AND a.status = 'A'
-     AND a.processed IN ('S', 'C')
---      AND a.response_date IS NULL;
+SELECT
+  COUNT(*),
+  (SYSDATE-1
+           || ' 15:30') TRX
+FROM
+  MERCURY.TBL_TRX_UTRYTOPCS
+WHERE
+  TO_DATE(ENTRY_DATE, 'dd-mm-yyyy') = TO_DATE(SYSDATE-1, 'dd-mm-yyyy')
+  AND A.FECHA_WS >= TRUNC(SYSDATE-1
+                                  || ' 15:30:00', 'dd-mm-yyyy hh24:mi:ss')
+  AND STATUS = 'A'
+  AND PROCESSED IN ('S', 'C')
+  AND RESPONSE_DATE IS NOT NULL;
 
 --  1379
 
