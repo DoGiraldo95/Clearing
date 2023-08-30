@@ -44,6 +44,11 @@ Commands
 		
 		* mkdir 'name directory' 	
 
+	-- to create files empty 
+
+		* touch 'name file'
+
+
 Repository
 
 	-- create repository 
@@ -90,6 +95,11 @@ Repository
 	-- review log commits 
 		
 		git log --oneline
+		git log -- graph --oneline
+
+	--	review complete log
+
+		git ref log
 
 Branch 			
 	
@@ -118,7 +128,7 @@ Branch
 
 		* cat 'file name'	
 
-	-- 	update branch
+	-- 	update branch with other branch 
 
 		* git merge 'branch name'  
 
@@ -138,3 +148,51 @@ Branch
 	-- upload branch  to github
 
 		* git push -u origin 'branch name'
+
+	-- upload repository to git hub
+
+		* git remote add origin 'URL GIT '
+
+	 -- reataure from last point 
+
+		* git checkout 'branch code'	
+
+VERSION CONTROL 
+
+	-- restaurate commit  
+
+		* git checkout 'commit code'
+
+	-- tag commit 
+
+		* git tag 'tag name'
+
+	-- save temporary 	
+
+		git stash
+
+	--	list stash
+
+		git stash list
+
+	-- restore changes temporary	
+
+		git stash pop
+
+	-- delete stash 
+
+		git stash drop	
+
+SETUP GITHUB
+
+		Connection type SSH 
+	
+		-- https://docs.github.com/es/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+
+		Upload local commits to GITHUB
+
+		-- git push 
+
+		download changes remotes
+
+		-- git pull
