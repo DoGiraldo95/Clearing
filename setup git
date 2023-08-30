@@ -167,6 +167,18 @@ VERSION CONTROL
 
 		* git tag 'tag name'
 
+	-- Para eliminarlo localmente:
+
+        * git tag --delete nombreDeltag
+
+    -- Para eliminarlo del servidor:
+
+		* git push --delete origin nombreDeltag	
+
+	-- Upload Tags With Commits	
+
+		* git push origin namebranch --tags
+
 	-- save temporary 	
 
 		git stash
