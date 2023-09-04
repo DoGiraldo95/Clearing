@@ -12,7 +12,7 @@ FROM
 UPDATE MERCURY.TBL_LIQUIDACIONRYT_USOS A
 SET
   A.CU_DATETIME = TO_DATE(
-    TO_CHAR((A.CU_DAT_INC_PUENTE) - 1, 'dd-mm-yyyy')
+    TO_CHAR((A.CU_DAT_INC_PUENTE) - 1, 'dd-mm-yyyy ')
     || ' '
     || TO_CHAR(A.CU_DATETIME, 'hh24:mi:ss'),
     'dd-mm-yyyy hh24:mi:ss'
