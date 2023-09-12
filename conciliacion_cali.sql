@@ -1,8 +1,8 @@
 --Para conciliacion red interna Cali
 SELECT a.fecha_liq, SUM(a.MONTO) VALOR
  FROM Mercury.Tbl_Valor_Consignar_Mrc a
- WHERE a.fecha_liq >= TO_DATE('19-08-2023', 'DD-MM-YYYY') --fecha hoy
- AND a.fecha_liq <= TO_DATE('22-08-2023', 'DD-MM-YYYY')
+ WHERE a.fecha_liq >= TO_DATE('01-09-2023', 'DD-MM-YYYY') --fecha hoy
+ AND a.fecha_liq <= TO_DATE('12-09-2023', 'DD-MM-YYYY')
  AND a.tp_id in (16,44)
  GROUP BY a.fecha_liq;
 
@@ -18,8 +18,8 @@ SELECT
 FROM
   MERCURY.TBL_VALOR_CONSIGNAR_MRC A
 WHERE
-  A.FECHA_LIQ >= TO_DATE('18-08-2023', 'DD-MM-YYYY') --Fecha de proceso
-  AND A.FECHA_LIQ <= TO_DATE('23-08-2023', 'DD-MM-YYYY') --Fecha de proceso
+  A.FECHA_LIQ >= TO_DATE('01-09-2023', 'DD-MM-YYYY') --Fecha de proceso
+  AND A.FECHA_LIQ <= TO_DATE('12-09-2023', 'DD-MM-YYYY') --Fecha de proceso
   AND A.TP_ID = 20
 ORDER BY
   FECHA_LIQ DESC;
@@ -39,8 +39,8 @@ SELECT
 FROM
   MERCURY.TBL_VALOR_CONSIGNAR_MRC A
 WHERE
-  A.FECHA_LIQ >= TO_DATE('18-08-2023', 'DD-MM-YYYY') --Fecha de proceso
-  AND A.FECHA_LIQ <= TO_DATE('23-08-2023', 'DD-MM-YYYY') --Fecha de proceso
+  A.FECHA_LIQ >= TO_DATE('01-09-2023', 'DD-MM-YYYY') --Fecha de proceso
+  AND A.FECHA_LIQ <= TO_DATE('12-09-2023', 'DD-MM-YYYY') --Fecha de proceso
   AND A.TP_ID = 19
 ORDER BY
   FECHA_LIQ DESC;
