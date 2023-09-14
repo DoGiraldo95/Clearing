@@ -202,7 +202,11 @@ FROM
       A.STATUS = 'A'
       AND A.PROCESSED IN ('S', 'C')
       AND TRUNC(A.VISA_DAT_INC_PUENTE) = TRUNC(SYSDATE) --to_date('05/05/5555','dd-mm-yyyy')
+<<<<<<< HEAD
       AND TRUNC(A.FECHA_WS) >= TRUNC (SYSDATE) -- to_date('05-04-2023 00:01','dd-mm-yyyy hh24:mi') -- Todos los Lunes (sysdate-2)
+=======
+      AND TRUNC(A.FECHA_WS) >= TRUNC(SYSDATE) -- to_date('05-04-2023 00:01','dd-mm-yyyy hh24:mi') -- Todos los Lunes (sysdate-2)
+>>>>>>> 686d8c3326798b8b33a6f11504ed145ce8b975a5
  --AND a.fecha_ws <= to_date('07-09-2021 23:59','dd-mm-yyyy hh24:mi')--trunc (sysdate)
       AND RESPONSE_DATE IS NOT NULL
     GROUP BY
