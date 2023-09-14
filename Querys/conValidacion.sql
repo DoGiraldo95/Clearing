@@ -137,3 +137,7 @@ FROM
   )
 WHERE
   ROWNUM = 1;
+
+  select 
+  * from MERCURY.TBL_AUDITORIA_TRX_VISA  A
+  where a.DATE_UPDATE = (SYSDATE);
