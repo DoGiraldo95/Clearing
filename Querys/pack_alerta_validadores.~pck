@@ -124,10 +124,9 @@ CREATE OR REPLACE PACKAGE BODY PACK_ALERTA_VALIDADORES AS
     CURSOR C_VALIDADORES_USOS IS
       SELECT
         DISTINCT (UDF.VEH_ID) VALIDADOR_ESTACION,
-        UDF.TP_ID,
-        LD.LD_ID, 
         LD.LD_DESC   DESCRIPCION,
-        CU.CU_TPID
+        CU.CU_TPID,
+        LD.LD_ID
       FROM
         MERCURY.CARDUSAGE        CU,
         MERCURY.LINEDETAILS      LD,
@@ -149,7 +148,7 @@ CREATE OR REPLACE PACKAGE BODY PACK_ALERTA_VALIDADORES AS
         OR (UDF.VEH_ID <> 9114))
         AND LENGTH(UDF.VEH_ID) < 5
       GROUP BY
-        UDF.TP_ID,LD.LD_ID,UDF.VEH_ID, LD.LD_DESC, CU.CU_TPID, LD.LD_ID;
+        UDF.VEH_ID, LD.LD_DESC, CU.CU_TPID, LD.LD_ID;
  --------------------------- VARIABLES -----------------------------------
     R_REMITE       VARCHAR2(1000) := 'dgiraldo@utryt.com.co';
     R_RECIBE       VARCHAR2(1000) := 'ddiez@utryt.com.co, jsanchez@utryt.com.co';
@@ -157,7 +156,7 @@ CREATE OR REPLACE PACKAGE BODY PACK_ALERTA_VALIDADORES AS
     P_ASUNTO       VARCHAR2(1000) := '';
     P_MENSAJE      VARCHAR2(10000) := '';
     ID_VALIDADOR   NUMBER;
-    NEW_VALIDADOR  LONG;
+    NEW_VALIDADOR  VARCHAR2(1000);
   BEGIN
     NEW_VALIDADOR := ' ';
     FOR I IN C_VALIDADORES_USOS LOOP
@@ -165,11 +164,6 @@ CREATE OR REPLACE PACKAGE BODY PACK_ALERTA_VALIDADORES AS
       FETCH C_VALIDADORES_MAESTRA INTO ID_VALIDADOR;
       IF C_VALIDADORES_MAESTRA%NOTFOUND THEN
         NEW_VALIDADOR := NEW_VALIDADOR
-                         || 'tp_id:= '
-                         || I.TP_ID
-                         || ' ld_id := '
-                         || I.LD_ID
-                         || ' veh_id:= '
                          || TO_CHAR(I.VALIDADOR_ESTACION)
                          || ' - '
                          || I.DESCRIPCION
