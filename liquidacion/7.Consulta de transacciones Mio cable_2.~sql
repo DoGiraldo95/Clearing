@@ -22,7 +22,7 @@ FROM
                   AND TO_DATE('22/01/2023', 'dd-mm-yyyy')) THEN
                      2400
                    WHEN (TRUNC(CU.CU_DATETIME) BETWEEN TO_DATE('23/01/2023', 'dd-mm-yyyy')
-                  AND TO_DATE('15/02/2024', 'dd-mm-yyyy')) THEN
+                  AND TO_DATE('14/02/2024', 'dd-mm-yyyy')) THEN
                      2700
                   ELSE
                      2900
@@ -40,11 +40,8 @@ FROM
                   WHEN (TRUNC(CU.CU_DATETIME) BETWEEN TO_DATE('25/01/2022', 'dd-mm-yyyy')
                   AND TO_DATE('22/01/2023', 'dd-mm-yyyy')) THEN
                      2400 * COUNT(CU.CU_UNIQUE_ID)
-                  WHEN (TRUNC(CU.CU_DATETIME) BETWEEN TO_DATE('23/01/2023', 'dd-mm-yyyy')
-                  AND TO_DATE('15/02/2024', 'dd-mm-yyyy')) THEN
-                    2700 * COUNT(CU.CU_UNIQUE_ID)
                   ELSE
-                     2900 * COUNT(CU.CU_UNIQUE_ID)
+                     2700 * COUNT(CU.CU_UNIQUE_ID)
                END
             ELSE
                CU.CU_FAREVALUE * COUNT(CU_UNIQUE_ID) * 1000
@@ -65,8 +62,8 @@ FROM
          AND CU.UDTM_ID = UDTM.UDTM_ID
          AND UDTM.UDS_ID = UDS.UDS_ID
          AND UDS.UDF_ID = UDF.UDF_ID
-         AND CU.CU_DATETIME >= TO_DATE('01-02-2024 00:01', 'dd-mm-yyyy hh24:mi') --trunc (sysdate -1) paso 1
-         AND CU.CU_DATETIME <= TO_DATE('15-02-2024 23:59', 'dd-mm-yyyy hh24:mi') --trunc (sysdate)    Dias liquidados
+         AND CU.CU_DATETIME >= TO_DATE('16-11-2023 00:01', 'dd-mm-yyyy hh24:mi') --trunc (sysdate -1) paso 1
+         AND CU.CU_DATETIME <= TO_DATE('30-11-2023 23:59', 'dd-mm-yyyy hh24:mi') --trunc (sysdate)    Dias liquidados
 
  /*  AND     udf.udf_receivedate >= to_date('16-06-2023 00:01','dd-mm-yyyy hh24:mi') 
              AND     udf.udf_receivedate <= to_date('01-07-2023 23:59','dd-mm-yyyy hh24:mi') --paso 2*/

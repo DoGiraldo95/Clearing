@@ -1,0 +1,122 @@
+SELECT *
+  FROM (WITH
+       -- Consulta a tarjetas 
+       TARJETA AS (SELECT c.ISS_ID, c.CD_ID, c.CRD_SNR, c.CRD_INTSNR
+                     FROM MERCURY.CARDS c),
+       -- Consulta a aplicaciones
+       APLICACIONES AS (SELECT a.APP_ID, a.APP_DESCSHORT
+                          FROM MERCURY.APPLICATIONS a),
+       -- Consulta a sw_mifare_trx condicionado, se  agrega campos tp_id = 16 y convirtiendo valor real a pesos
+       SW_MIFARE AS (SELECT sw.*, 16 AS TP_ID, (sw.FEE * 10) AS FAREVALUE
+                       FROM MERCURY.sw_mifare_trx sw
+                      WHERE TRUNC(SW.CU_DAT_INC_PUENTE) =
+                            TO_DATE('06/06/6666', 'dd-mm-yyyy')
+                            AND sw.CREATED >= TO_DATE('&Fecha_1 07:59:00', 'dd/mm/yyyy hh24:mi:ss')
+                             AND sw.CREATED <= TO_DATE('&Fecha_2 07:59:00', 'dd/mm/yyyy hh24:mi:ss')
+                        AND sw.BUS_ID NOT IN
+                            (85001, 85002, 85003, 85004, 85005)
+                        AND SW.TERMINAL_ID <> 1500030409
+                        AND (sw.USE_TYPE = 0 OR sw.FEE > 0))
+       
+         SELECT sw.LINE_ID,
+                a.APP_DESCSHORT,
+                t.ISS_ID,
+                t.CD_ID,
+                t.CRD_SNR,
+                sw.APP_ID,
+                sw.TSN,
+                sw.USE_TYPE, -- control de integracion 0 -> 'uso pago' 1 -> integracion
+                sw.TRX_DATE,
+                sw.CU_DAT_INC_PUENTE,
+                sw.BUS_ID,
+                sw.TP_ID,
+                sw.FAREVALUE,
+                COUNT(1) AS QPAX
+           FROM SW_MIFARE sw
+           JOIN TARJETA t
+             ON (sw.UUID = t.CRD_INTSNR)
+           JOIN APLICACIONES a
+             ON (sw.APP_ID = a.APP_ID)
+          WHERE 1 = 1
+          GROUP BY sw.LINE_ID,
+                   a.APP_DESCSHORT,
+                   t.ISS_ID,
+                   t.CD_ID,
+                   t.CRD_SNR,
+                   sw.APP_ID,
+                   sw.TSN,
+                   sw.USE_TYPE,
+                   sw.TRX_DATE,
+                   sw.CU_DAT_INC_PUENTE,
+                   sw.BUS_ID,
+                   sw.TP_ID,
+                   sw.FAREVALUE
+         UNION
+         SELECT ld.ld_id,
+                app.app_descshort,
+                CU.ISS_ID,
+                CU.CD_ID,
+                CU.CRD_SNR,
+                CU.APP_ID,
+                cu.cu_tsn,
+                NVL(cu.cu_itg_ctr,0),
+                cu.cu_datetime,
+                cu_dat_inc_puente,
+                udf.veh_id,
+                udf.tp_id,
+                --cu.cu_farevalue * 1000 AS CU_FAREVALUE,
+                CASE
+                  WHEN ((cu.app_id = 902 OR cu.app_id = 920) AND
+                       cu.cu_itg_ctr IS NULL) THEN
+                   CASE
+                     WHEN (TRUNC(cu.cu_datetime) <
+                          to_date('24/01/2022', 'dd-mm-yyyy')) THEN
+                      2200
+                     WHEN ((TRUNC(cu.cu_datetime) >=
+                          to_date('24/01/2022', 'dd-mm-yyyy')) and
+                          (TRUNC(cu.cu_datetime) <=
+                          to_date('22/01/2023', 'dd-mm-yyyy'))) THEN
+                      2400
+                     ELSE
+                      2700
+                   END
+                  ELSE
+                   cu.cu_farevalue * 1000
+                END AS CU_FAREVALUE, --***** Modificacion Farevalue
+                COUNT(1) AS QPAX
+           FROM mercury.CARDUSAGE        cu,
+                mercury.linedetails      ld,
+                mercury.USAGEDATATRIPMT  udtm,
+                mercury.USAGEDATASERVICE uds,
+                mercury.USAGEDATAFILE    udf,
+                mercury.applications     app
+          WHERE 1 = 1
+            AND CU.UDTM_ID = UDTM.UDTM_ID
+            AND UDTM.UDS_ID = UDS.UDS_ID
+            AND UDS.UDF_ID = UDF.UDF_ID
+            AND CU.cu_dat_inc_puente >=
+                TO_DATE('&Fecha_1 07:59:00', 'dd/mm/yyyy hh24:mi:ss')
+            AND CU.cu_dat_inc_puente <=
+                TO_DATE('&Fecha_2 07:59:00', 'dd/mm/yyyy hh24:mi:ss')
+            AND cu.cut_id = 1 -- Tipos de uso -> 1: Passenger use, 5: On-board sale
+            AND NVL(cu.cu_partfareseqnbr, 0) <> 2 -- Solo cuenta una vez las transacciones que afectan las dos cuentas de la tarjeta.
+            AND app.app_id = cu.app_id
+            AND ld.ld_id = cu.ld_id
+            AND udf.tp_id not in (25, 52) --*** 52 - 
+            AND ((CU.cu_farevalue > 0 or cu.cu_itg_ctr is not null) or
+                CU.app_id in (920, 902)) -- Solo usos pagos
+         
+          GROUP BY ld.ld_id,
+                   app.app_descshort,
+                   cu.cu_itg_ctr,
+                   -- to_char(cu.cu_datetime, 'YYYY-MM-DD'),
+                   cu.cu_datetime,
+                   cu_dat_inc_puente,
+                   udf.veh_id,
+                   cu.cu_farevalue * 1000,
+                   CU.ISS_ID,
+                   CU.CD_ID,
+                   CU.CRD_SNR,
+                   CU.APP_ID,
+                   cu.cu_tsn,
+                   udf.tp_id) T

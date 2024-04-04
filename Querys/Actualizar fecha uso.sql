@@ -1,14 +1,14 @@
 ﻿/*SELECT
-  A.CU_DAT_INC_PUENTE,
-  TRUNC( A.CU_DATETIME ),
-  A.LD_ID,
-  A.VEH_ID,
-  COUNT(4)                                         CANTIDAD,
-  CU_FAREVALUE,
-  TRUNC(CLEARING_REG),
-  TO_CHAR((A.CU_DAT_INC_PUENTE) - 1, 'dd-mm-yyyy')
+	A.CU_DAT_INC_PUENTE,
+	TO_CHAR(A.CU_DATETIME, 'dd Month, yyyy'),
+	A.LD_ID,
+	A.VEH_ID,
+	COUNT(4) CANTIDAD,
+	CU_FAREVALUE,
+	TRUNC(CLEARING_REG),
+	TO_CHAR((A.CU_DAT_INC_PUENTE) - 1, 'dd-mm-yyyy')
 FROM
-  TBL_LIQUIDACIONRYT_USOS A*/
+	TBL_LIQUIDACIONRYT_USOS A */
 UPDATE MERCURY.TBL_LIQUIDACIONRYT_USOS A
 SET
   A.CU_DATETIME = TO_DATE(
@@ -17,20 +17,30 @@ SET
     || TO_CHAR(A.CU_DATETIME, 'hh24:mi:ss'),
     'dd-mm-yyyy hh24:mi:ss'
   )
- /*  SELECT ROWID, a.*
+/*SELECT ROWID, a.*
 FROM tbl_liquidacionryt_usos a*/
 WHERE
-  TO_CHAR(A.CLEARING_REG, 'dd-mm-yyyy') = TO_CHAR(SYSDATE, 'dd-mm-yyyy') -- Fecha Registro
-  AND TO_CHAR(A.CU_DATETIME, 'dd-mm-yyyy') IN ('06-06-2022')
-  AND TO_CHAR(A.CU_DATETIME, 'yyyy') <> 2023
-  AND A.VEH_ID IN (504)
- --    AND a.ld_id = 60
- --AND a.cu_farevalue = 2700
-  AND A.CU_ITG_CTR IS NULL
-  AND A.APP_ID NOT IN (902, 920) -- BANCOS
-  AND (A.TP_ID NOT IN (999)
-  OR (A.TP_ID = 999
-  AND A.CU_FAREVALUE > 0)) GROUP BY A.CU_DAT_INC_PUENTE, A.VEH_ID, CU_FAREVALUE, A.LD_ID, TRUNC(CLEARING_REG), TRUNC( A.CU_DATETIME );
+	TO_CHAR(A.CLEARING_REG, 'dd-mm-yyyy') = TO_CHAR(SYSDATE, 'dd-mm-yyyy')
+	-- Fecha Registro
+	-- AND TO_CHAR(A.CU_DATETIME, 'dd-mm-yyyy') IN ('05-06-2022')
+	AND TO_CHAR(A.CU_DATETIME, 'yyyy') NOT IN (2023, 2024)
+	-- AND A.VEH_ID IN (504)
+	-- AND a.ld_id = 60
+	AND (a.cu_farevalue <> 2700 OR a.CU_FAREVALUE = 2700)
+	AND A.CU_ITG_CTR IS NULL
+	-- BANCOS
+	AND A.APP_ID NOT IN (902, 920)
+	
+	AND (A.TP_ID NOT IN (999)
+		OR (A.TP_ID = 999
+			AND A.CU_FAREVALUE > 0))
+GROUP BY
+	A.CU_DAT_INC_PUENTE,
+	A.VEH_ID,
+	CU_FAREVALUE,
+	A.LD_ID,
+	TRUNC(CLEARING_REG),
+	TO_CHAR(A.CU_DATETIME, 'dd Month, yyyy');
 
 405
 

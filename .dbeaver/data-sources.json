@@ -1,0 +1,66 @@
+{
+	"folders": {},
+	"connections": {
+		"oracle_thin-18b904d2806-166e7466b60dd8cd": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "MRCPRD",
+			"save-password": true,
+			"configuration": {
+				"database": "MRCPRD",
+				"url": "jdbc:oracle:thin:@(DESCRIPTION \u003d (ADDRESS \u003d (PROTOCOL \u003d TCP)(HOST \u003d cdpx1db01-vip)(PORT \u003d 1521)) (ADDRESS \u003d (PROTOCOL \u003d TCP)(HOST \u003d cdpx1db02-vip)(PORT \u003d 1521)) (LOAD_BALANCE \u003d yes) (CONNECT_DATA \u003d (SERVER \u003d DEDICATED) (SERVICE_NAME \u003d MRCPRD) ) )",
+				"configurationType": "MANUAL",
+				"home": "C:\\app\\dgiraldo\\product\\19.0.0\\client_1",
+				"type": "dev",
+				"provider-properties": {
+					"@dbeaver-connection-type@": "TNS",
+					"@dbeaver-sid-service@": "SERVICE"
+				},
+				"auth-model": "oracle_native"
+			}
+		},
+		"oracle_thin-18b95a5d8e0-4cea72f58e64e5ae": {
+			"provider": "oracle",
+			"driver": "oracle_thin",
+			"name": "bdsgco_exa",
+			"save-password": true,
+			"configuration": {
+				"database": "bdsgco_exa",
+				"url": "jdbc:oracle:thin:@(DESCRIPTION \u003d (ADDRESS \u003d (PROTOCOL \u003d TCP)(HOST \u003d rds-utryt-prd-sgcocali-sgco.cgcgkvpgpap4.us-east-1.rds.amazonaws.com)(PORT \u003d 1521)) (CONNECT_DATA \u003d (SERVER \u003d DEDICATED) (SERVICE_NAME \u003d BDSGCO) ) )",
+				"configurationType": "MANUAL",
+				"home": "C:\\app\\dgiraldo\\product\\19.0.0\\client_1",
+				"type": "dev",
+				"provider-properties": {
+					"@dbeaver-connection-type@": "TNS",
+					"show-only-one-schema@": "false",
+					"@dbeaver-check-schema-content@": "false",
+					"@dbeaver-always-show-dba@": "false",
+					"@dbeaver-always-use-dba-views@": "false",
+					"@dbeaver-meta-use-sys-schema@": "false",
+					"@dbeaver-meta-use-simple-constraints@": "false",
+					"@dbeaver-use-rule-hint@": "false",
+					"@dbeaver-use-meta-optimizer@": "true",
+					"@dbeaver-meta-use-alternative-table-query@": "false",
+					"oracle.meta-search-in-synonyms": "false",
+					"oracle.show-date-as-date": "false",
+					"@dbeaver-sid-service@": "SERVICE"
+				},
+				"auth-model": "oracle_native"
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false,
+			"smart-commit": false,
+			"smart-commit-recover": false,
+			"auto-close-transactions": true,
+			"close-transactions-period": 1800
+		}
+	}
+}

@@ -1,0 +1,64 @@
+DECLARE
+  CURSOR c_usagedatafiles IS
+    WITH aplicaciones AS
+     (SELECT app_id, iss_id FROM applications WHERE af_id IN (27, 28, 30))
+    
+    SELECT
+    /*sum(count(cu.pb_id)) suma_trx*/
+     cu.pb_id, cu.dlf_id, udf_id, count(1) transCount
+      FROM cardusage cu
+      JOIN deviceLogFiles dlf
+        ON cu.pb_id = dlf.pb_id
+       AND cu.dlf_id = dlf.dlf_id
+      JOIN DEVICELOGMT DMT
+        ON DLF.PB_ID = DMT.PB_ID
+       AND DLF.DLF_ID = DMT.DLF_ID
+      JOIN UsageDataFile udf
+        ON udf.pb_id = cu.pb_id
+       AND udf.dv_id = dmt.dv_id
+       AND udf.udf_fileseq = dlf.dlf_fileseqnbr
+       AND UDF.UDF_CONNDATE = DLF.DLF_DTCONN
+     WHERE CUT_ID IN (1, 5)
+       AND cu_dat_inc_puente =
+           TO_DATE('06/06/6666 00:00:00', 'dd/mm/yyyy hh24:mi:ss')
+       AND udf.udf_receivedate >= trunc(sysdate - 1)
+          --Agregado 26/10/2022 por CLEARING. Solucion a problema de indice. Tiempo de prosamiento > 40 minutos
+       AND (app_id, app_iss_id) IN (SELECT * FROM aplicaciones)
+       AND cu.app_id <> 1023
+     GROUP BY cu.pb_id, cu.dlf_id, udf_id;
+
+  rusagedatafile c_usagedatafiles%rowtype;
+
+  contador NUMBER;
+
+BEGIN
+
+  contador := 0;
+
+  FOR i IN c_usagedatafiles LOOP
+    IF c_usagedatafiles%FOUND THEN
+      contador := contador + i.transCount;
+    
+      UPDATE mercury.cardusage cu
+         SET cu.cu_dat_inc_puente = 
+       WHERE cu.pb_id = i.pb_id
+         AND cu.dlf_id = i.dlf_id
+         AND cu.cut_id IN (1, 5)
+         AND (cu.app_id, cu.iss_id) IN
+             (SELECT app_id, iss_id
+                FROM applications
+               WHERE af_id IN (27, 28, 30))
+         AND cu.app_id <> 1023
+         AND cu_dat_inc_puente =
+             TO_DATE('06/06/6666 00:00:00', 'dd/mm/yyyy hh24:mi:ss');
+             
+    END IF;
+  END LOOP;
+
+  IF contador > 0 THEN
+    dbms_output.put_line('cantidad de registros a modificados  := ' ||
+                         contador);
+  ELSE
+    dbms_output.put_line('no hay registros');
+  END IF;
+END;

@@ -1,23 +1,40 @@
-SELECT *
-  FROM (SELECT TRUNC(UT.DATE_CREATED) fecha,
-               COUNT(DISTINCT(UT.DEVICE_ID)) "CANT_ESTACION",
-               /* COUNT(*) "CANT_USOS",*/
-               'ESTACIONES' TIPO
-          FROM TBL_TRX_UTRYTOPCS UT
-         WHERE UT.FECHA_WS >=
-               TO_DATE('02-10-2023 00:01', 'dd-mm-yyyy hh24:mi')
-           AND UT.METROCALI = 0
-         GROUP BY TRUNC(UT.DATE_CREATED)
-        UNION
-        SELECT TRUNC(UT.DATE_CREATED) fecha,
-               COUNT(DISTINCT(UT.DEVICE_ID)) "CANT_ESTACION",
-               /*COUNT(*) "CANT_USOS",*/
-               'BUSES'
-          FROM TBL_TRX_UTRYTOPCS UT
-         WHERE UT.FECHA_WS >=
-               TO_DATE('02-10-2023 00:01', 'dd-mm-yyyy hh24:mi')
-           AND UT.METROCALI <> 0
-         GROUP BY TRUNC(UT.DATE_CREATED)) t
-PIVOT(SUM(t.cant_estacion)
-   FOR TIPO IN('ESTACIONES', 'BUSES'))
- ORDER BY 1
+SELECT
+  *
+FROM
+  (
+    SELECT
+      TRUNC(TU.DATE_CREATED) FECHA,
+      COUNT(*)               USOS,
+      'ESTACIONES'           TIPO
+    FROM
+      MERCURY.TBL_TRX_UTRYTOPCS TU
+    WHERE
+      TO_DATE(TU.FECHA_WS, 'dd-mm-yyyy') >= (
+        SELECT
+          TO_DATE(TRUNC(SYSDATE, 'month'), 'dd-mm-yyyy')
+        FROM
+          DUAL
+      )
+      AND TU.METROCALI = '0'
+    GROUP BY
+      TRUNC(TU.DATE_CREATED) UNION
+      SELECT
+        TRUNC(TU.DATE_CREATED),
+        COUNT(*),
+        'BUSES'
+      FROM
+        MERCURY.TBL_TRX_UTRYTOPCS TU
+      WHERE
+        TO_DATE(TU.FECHA_WS, 'dd-mm-yyyy') >= (
+          SELECT
+            TO_DATE(TRUNC(SYSDATE, 'month'), 'dd-mm-yyyy')
+          FROM
+            DUAL
+        )
+        AND TU.METROCALI <> '0'
+      GROUP BY
+        TRUNC(TU.DATE_CREATED)
+  )                         V PIVOT(SUM(V.USOS) FOR TIPO IN('ESTACIONES' TRX_ESTACIONES,
+  'BUSES' TRX_BUSES))
+ORDER BY
+  1;

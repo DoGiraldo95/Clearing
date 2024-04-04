@@ -1,100 +1,110 @@
 --------------------***********CONSULTAR TRANSACCIONES MIO CABLE V 3.0******----------------
 
-SELECT trunc(p.fecha_uso), sum(p.monto_usos) , sum(p.cantidad_usos) FROM (SELECT CASE
-         WHEN (to_char(FECHA, 'yyyy') <> 2023 AND TARIFA = 2700) THEN
+SELECT
+  TRUNC(P.FECHA_USO),
+  SUM(P.MONTO_USOS),
+  SUM(P.CANTIDAD_USOS)
+FROM
+  (
+    SELECT
+      CASE
+        WHEN (TO_CHAR(FECHA, 'yyyy') <> 2023
+        AND TARIFA = 2700) THEN
           TRUNC(PUENTE - 1)
-         WHEN (to_char(FECHA, 'dd-mm-yyyy') < (PUENTE - 16) AND
-              TARIFA = 2700) THEN
+        WHEN (TO_CHAR(FECHA, 'dd-mm-yyyy') < (PUENTE - 16)
+        AND TARIFA = 2700) THEN
           TRUNC(PUENTE - 1)
-         ELSE
+        ELSE
           FECHA
-       END FECHA_USO,
-       SUM(MONTO) AS MONTO_USOS,
-       SUM(CANTIDAD) AS CANTIDAD_USOS
+      END FECHA_USO,
+      SUM(MONTO)                                               AS MONTO_USOS,
+      SUM(CANTIDAD)                                            AS CANTIDAD_USOS
+    FROM
+      (
+        SELECT
+          TRUNC(CU.CU_DATETIME)                                                                                                                                                    AS FECHA,
+          COUNT(CU.CU_UNIQUE_ID)                                                                                                                                                   AS CANTIDAD,
+          CASE -- IDENTIFICA USOS POR TARIFA
+            WHEN ((CU.APP_ID = 902
+            OR CU.APP_ID = 920)
+            AND CU.CU_ITG_CTR IS NULL) THEN
+              CASE
+                WHEN (TRUNC(CU.CU_DATETIME) < TO_DATE('24/01/2022', 'dd-mm-yyyy')) THEN
+                  2200
+                WHEN (TRUNC(CU.CU_DATETIME) BETWEEN TO_DATE('25/01/2022', 'dd-mm-yyyy')
+                AND TO_DATE('22/01/2023', 'dd-mm-yyyy')) THEN
+                  2400
+                ELSE
+                  2700
+              END
+            ELSE
+              CU.CU_FAREVALUE * 1000
+          END AS                                                                         TARIFA,
+          CASE -- MONTO TOTAL DE USOS POR TARIFA
+            WHEN ((CU.APP_ID = 902
+            OR CU.APP_ID = 920)
+            AND CU.CU_ITG_CTR IS NULL) THEN
+              CASE
+                WHEN (TRUNC(CU.CU_DATETIME) < TO_DATE('24/01/2022', 'dd-mm-yyyy')) THEN
+                  2200 * COUNT(CU.CU_UNIQUE_ID)
+                WHEN (TRUNC(CU.CU_DATETIME) BETWEEN TO_DATE('25/01/2022', 'dd-mm-yyyy')
+                AND TO_DATE('22/01/2023', 'dd-mm-yyyy')) THEN
+                  2400 * COUNT(CU.CU_UNIQUE_ID)
+                ELSE
+                  2700 * COUNT(CU.CU_UNIQUE_ID)
+              END
+            ELSE
+              CU.CU_FAREVALUE * COUNT(CU_UNIQUE_ID) * 1000
+          END AS MONTO,
+          CU.CU_DAT_INC_PUENTE                                                                                                                                                     PUENTE
+ --cu.cu_farevalue * count(cu_unique_id) * 1000 as MONTO
+,
+          LD.LD_DESC                                                                                                                                                               ESTACION
+        FROM
+          MERCURY.CARDUSAGE        CU,
+          MERCURY.LINEDETAILS      LD,
+          MERCURY.USAGEDATATRIPMT  UDTM,
+          MERCURY.USAGEDATASERVICE UDS,
+          MERCURY.USAGEDATAFILE    UDF,
+          MERCURY.APPLICATIONS     APP
+        WHERE
+          1 = 1
+          AND CU.UDTM_ID = UDTM.UDTM_ID
+          AND UDTM.UDS_ID = UDS.UDS_ID
+          AND UDS.UDF_ID = UDF.UDF_ID
+          AND UDF.UDF_RECEIVEDATE >= TO_DATE('&Fecha1 00:01', 'dd-mm-yyyy hh24:mi') --un dia antes
+ --(select to_date(trunc(sysdate, 'month')-1 || ' 00:01', 'dd-mm-yyyy hh24:mi') from dual) inicio de MES
+ --(select to_date(trunc(sysdate, 'day')-1 || ' 00:01', 'dd-mm-yyyy hh24:mi') from dual) mitad de mes
+          AND UDF.UDF_RECEIVEDATE <= TO_DATE('&Fecha2 23:59', 'dd-mm-yyyy hh24:mi') -- un dia despues
+ --(select to_date(trunc(sysdate, 'day')-1 || ' 00:01', 'dd-mm-yyyy hh24:mi') from dual) mitad de mes
+ --(select to_date (last_day(sysdate)+1 || ' 00:01', 'dd-mm-yyyy hh24:mi') from dua) ultimo dia del mes
+          AND CU.CUT_ID = 1 -- Tipos de uso -> 1: Passenger use, 5: On-board sale
+          AND NVL(CU.CU_PARTFARESEQNBR, 0) <> 2 -- Solo cuenta una vez las transacciones que afectan las dos cuentas de la tarjeta.
+          AND APP.APP_ID = CU.APP_ID
+          AND LD.LD_ID = CU.LD_ID
+          AND TRUNC(CU.CU_DATETIME) NOT IN ( TO_DATE('&Fecha1', 'dd-mm-yyyy'), TO_DATE('&Fecha2', 'dd-mm-yyyy'))
+          AND UDF.UDF_RECEIVEDATE > (SYSDATE - 60)
+          AND UDF.TP_ID IN (44)
+          AND (CU.CU_FAREVALUE > 0
+          OR CU.APP_ID IN (920, 902)) -- Solo usos pagos (efectivo o bancos)
+ --AND  ((CU.cu_farevalue >= 0 or cu.cu_itg_ctr is not null) or CU.app_id in (920,902) OR app.af_id = 30 )
+ --and cu.cu_itg_ctr is null
+ --and cu.cu_farevalue not in ('2.40','2.20' )--0.0
+        GROUP BY
+          TRUNC(CU.CU_DATETIME), CU.CU_FAREVALUE, CU.APP_ID, CU.CU_ITG_CTR, CU.CU_DATETIME, CU.CU_DAT_INC_PUENTE, LD.LD_DESC
+      )
+    GROUP BY
+      FECHA,
+      TARIFA,
+      PUENTE,
+      MONTO,
+      CANTIDAD
+  ) P
+GROUP BY
+  TRUNC(P.FECHA_USO)
+ORDER BY
+  1 ASC;
 
-  FROM (SELECT trunc(cu.cu_datetime) AS FECHA,
-               count(cu.cu_unique_id) as CANTIDAD,
-               CASE -- IDENTIFICA USOS POR TARIFA
-                 WHEN ((cu.app_id = 902 OR cu.app_id = 920) AND
-                      cu.cu_itg_ctr IS NULL) THEN
-                  CASE
-                    WHEN (TRUNC(cu.cu_datetime) <
-                         to_date('24/01/2022', 'dd-mm-yyyy')) THEN
-                     2200
-                    WHEN (TRUNC(cu.cu_datetime) BETWEEN
-                         to_date('25/01/2022', 'dd-mm-yyyy') AND
-                         to_date('22/01/2023', 'dd-mm-yyyy')) THEN
-                     2400
-                    ELSE
-                     2700
-                  END
-                 ELSE
-                  cu.cu_farevalue * 1000
-               END AS TARIFA,
-               CASE -- MONTO TOTAL DE USOS POR TARIFA
-                 WHEN ((cu.app_id = 902 OR cu.app_id = 920) AND
-                      cu.cu_itg_ctr IS NULL) THEN
-                  CASE
-                    WHEN (TRUNC(cu.cu_datetime) <
-                         to_date('24/01/2022', 'dd-mm-yyyy')) THEN
-                     2200 * COUNT(cu.CU_UNIQUE_ID)
-                    WHEN (TRUNC(cu.cu_datetime) BETWEEN
-                         to_date('25/01/2022', 'dd-mm-yyyy') AND
-                         to_date('22/01/2023', 'dd-mm-yyyy')) THEN
-                     2400 * COUNT(cu.CU_UNIQUE_ID)
-                    ELSE
-                     2700 * COUNT(cu.CU_UNIQUE_ID)
-                  END
-                 ELSE
-                  cu.cu_farevalue * count(cu_unique_id) * 1000
-               END AS MONTO,
-               cu.cu_dat_inc_puente PUENTE
-               --cu.cu_farevalue * count(cu_unique_id) * 1000 as MONTO 
-              ,
-               ld.ld_desc ESTACION
-          FROM mercury.CARDUSAGE        cu,
-               mercury.linedetails      ld,
-               mercury.USAGEDATATRIPMT  udtm,
-               mercury.USAGEDATASERVICE uds,
-               mercury.USAGEDATAFILE    udf,
-               mercury.applications     app
-         WHERE 1 = 1
-           AND CU.UDTM_ID = UDTM.UDTM_ID
-           AND UDTM.UDS_ID = UDS.UDS_ID
-           AND UDS.UDF_ID = UDF.UDF_ID
-              
-           AND udf.udf_receivedate >=
-               to_date('&Fecha1 00:01', 'dd-mm-yyyy hh24:mi') --un dia antes
-           AND udf.udf_receivedate <=
-               to_date('&Fecha2 23:59', 'dd-mm-yyyy hh24:mi')-- un dia despues
-              
-           AND cu.cut_id = 1 -- Tipos de uso -> 1: Passenger use, 5: On-board sale
-           AND NVL(cu.cu_partfareseqnbr, 0) <> 2 -- Solo cuenta una vez las transacciones que afectan las dos cuentas de la tarjeta.
-           AND app.app_id = cu.app_id
-           AND ld.ld_id = cu.ld_id
-              
-           AND TRUNC(cu.cu_datetime) NOT IN ( TO_DATE('&Fecha1', 'dd-mm-yyyy') , TO_DATE('&Fecha2', 'dd-mm-yyyy'))
-           AND udf.udf_receivedate > (sysdate - 60)
-           AND udf.tp_id in (44)
-           AND (CU.cu_farevalue > 0 or CU.app_id in (920, 902)) -- Solo usos pagos (efectivo o bancos)
-        --AND  ((CU.cu_farevalue >= 0 or cu.cu_itg_ctr is not null) or CU.app_id in (920,902) OR app.af_id = 30 )
-        --and cu.cu_itg_ctr is null
-        --and cu.cu_farevalue not in ('2.40','2.20' )--0.0
-        
-         GROUP BY trunc(cu.cu_datetime),
-                  cu.cu_farevalue,
-                  cu.app_id,
-                  cu.cu_itg_ctr,
-                  cu.cu_datetime,
-                  cu.cu_dat_inc_puente,
-                  ld.ld_desc
-        
-        )
-
- GROUP BY FECHA, TARIFA, PUENTE, MONTO, CANTIDAD) p
- GROUP BY trunc(p.fecha_uso)
-
- order by 1 asc;
 /*--------------------***********CONSULTAR TRANSACCIONES MIO CABLE V 2.0******----------------
 SELECT FECHA,
        SUM (MONTO) AS MONTO_USOS,
@@ -319,7 +329,7 @@ SELECT  TRUNC(cu.cu_datetime) AS FECHA_USO,
   AND     NVL(cu.cu_partfareseqnbr,0) <> 2   -- Solo cuenta una vez las transacciones que afectan las dos cuentas de la tarjeta.
   AND     app.app_id = cu.app_id
   AND     ld.ld_id = cu.ld_id
-  AND     udf.tp_id in (25,44,45) --* 44 MIO Cable, 45 Cañaveral, 25 DISPENSADORES KAWY 
+  AND     udf.tp_id in (25,44,45) --* 44 MIO Cable, 45 Caï¿½averal, 25 DISPENSADORES KAWY 
   AND  ((CU.cu_farevalue >= 0 or cu.cu_itg_ctr is not null) or CU.app_id in (920,902) OR app.af_id = 30 )
   --AND  cu.cu_itg_ctr is null
   --AND ((CU.cu_farevalue > 0) or CU.app_id in (920,902)) -- Solo usos pagos
