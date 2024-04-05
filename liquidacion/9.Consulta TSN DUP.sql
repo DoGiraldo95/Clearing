@@ -77,7 +77,7 @@ FROM
       AND UDS.UDF_ID = UDF.UDF_ID
       AND CU.CU_DAT_INC_PUENTE >= TO_DATE('&Fecha_Minima 07:59', 'dd-mm-yyyy hh24:mi') --FECHA_MIN --Fecha Tabla Puente
       AND CU.CU_DAT_INC_PUENTE <= TO_DATE('&Fecha_Maxima 07:59', 'dd-mm-yyyy hh24:mi') --FECHA_MAX
-      AND CU.CUT_ID = 1 -- Tipos de uso -> 1: Passenger use, 5: On-board sale
+      AND CU.CUT_ID = 23 -- Tipos de uso -> 1: Passenger use, 5: On-board sale
       AND NVL(CU.CU_PARTFARESEQNBR, 0) <> 2 -- Solo cuenta una vez las transacciones que afectan las dos cuentas de la tarjeta.
       AND APP.APP_ID = CU.APP_ID
       AND LD.LD_ID = CU.LD_ID
